@@ -1,0 +1,46 @@
+plugins {
+    id 'java-library' // Explicitly applies the Java Library plugin
+    id 'io.qameta.allure' version '2.10.0' // Use latest Allure version directly
+}
+
+repositories {
+    mavenCentral() // Declare Maven Central as the repository
+}
+
+ext { // Use 'ext' block for shared properties
+    allureVersion = '2.19.0'
+    slf4jVersion = '2.0.9' // Update to latest SLF4j version
+}
+
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set(allureVersion)
+            }
+        }
+    }
+}
+
+
+dependencies {
+    testImplementation 'io.rest-assured:rest-assured:5.3.0'
+    testImplementation 'io.qameta.allure:allure-rest-assured:2.19.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
+}
+
+tasks.withType(Test) {
+    systemProperties(System.getProperties())// Pass all system properties to tests
+    useJUnitPlatform()
+
+    testLogging {
+        events "started", "passed", "skipped", "failed", "standart_out" // Focus on relevant events
+        exceptionFormat "full" // Show full exception details for debugging
+        showStandardStreams = true // Display standard output and error
+    }
+}
